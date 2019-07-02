@@ -13,6 +13,7 @@ public class HelloFlutterPlugin implements MethodCallHandler {
     final MethodChannel channel = new MethodChannel(registrar.messenger(), "hello_flutter_plugin");
     channel.setMethodCallHandler(new HelloFlutterPlugin());
     HelloFlutterWrapper.getInstance().saveMethodChannel(channel);
+    registrar.platformViewRegistry().registerViewFactory("template_view",new HelloFlutterViewFactory(registrar.messenger()));
   }
 
   @Override

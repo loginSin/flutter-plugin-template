@@ -5,6 +5,7 @@ public class HelloMethodKey {
     static String Init = "Init";
     static String GetCurrentUserPhone = "GetCurrentUserPhone";
     static String FetchUserInfo = "FetchUserInfo";
+    static String ChangeColor = "ChangeColor";
 
     //callback key 由 native 触发，flutter 响应
     static String FetchUserInfoCallBack = "FetchUserInfoCallBack";

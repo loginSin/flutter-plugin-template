@@ -51,6 +51,15 @@ class _TemplcateViewPageState extends State<TemplateViewPage> {
         },
         creationParamsCodec: new StandardMessageCodec(),
       );
+    }else if(defaultTargetPlatform == TargetPlatform.android) {
+      return AndroidView(
+        viewType: "template_view",
+        onPlatformViewCreated:_onPlatformViewCreated,
+        creationParams: <String,dynamic>{
+          "userId":userId,
+        },
+        creationParamsCodec: new StandardMessageCodec(),
+      );
     }
     return Text('TemplateViewPage 插件尚不支持$defaultTargetPlatform ');
   }

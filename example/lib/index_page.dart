@@ -27,15 +27,13 @@ class IndexState extends State<IndexPage> {
   }
 
   onPushPlatformView() {
-    if(defaultTargetPlatform == TargetPlatform.iOS)  {
+    if(defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android)  {
       Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => 
           new NativeViewPage("flutter_userId")
         ));
-    }else if(defaultTargetPlatform == TargetPlatform.android) {
-      
     }
   }
 
