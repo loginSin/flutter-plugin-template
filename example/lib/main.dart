@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:hello_flutter_plugin/hello_flutter_plugin.dart';
 import 'package:hello_flutter_plugin/method_key.dart';
 
+import 'index_page.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatefulWidget {
@@ -45,67 +47,14 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  onGetCurrentUserPhone() async {
-    Map map = await HelloFlutterPlugin.getCurrentUserPhone("flutter_currentUserId");
-    print("get current user phone from native " + map.toString());
-  }
-
-  onFetchUserInfo() {
-    HelloFlutterPlugin.fetchUserInfo("flutter_userId");
-    print("fetch user info from native start ");
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              height: 500,
-              child: Column(
-                children: <Widget>[
-                  Row(children: <Widget>[]),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: RaisedButton(
-                              onPressed: () => onGetCurrentUserPhone(),
-                              child: Text("onGetCurrentUserPhone"),
-                              color: Colors.blueAccent,
-                              textColor: Colors.white,
-                            ),
-                          )
-                        ],
-                        
-                      )
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: RaisedButton(
-                              onPressed: () => onFetchUserInfo(),
-                              child: Text("onFetchUserInfo"),
-                              color: Colors.blueAccent,
-                              textColor: Colors.white,
-                            ),
-                          )
-                        ],
-                        
-                      )
-                    ),
-                ],
-              )
-              ),
-        ),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: IndexPage(),
     );
   }
 }
