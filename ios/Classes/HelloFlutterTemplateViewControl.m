@@ -47,6 +47,7 @@
 }
 
 - (void)changeViewColor{
+    NSLog(@"iOS changeColor");
     NSArray *colors = @[[UIColor redColor],[UIColor greenColor],[UIColor yellowColor],[UIColor brownColor]];
     int index = arc4random()%colors.count;
     _templcateView.backgroundColor = colors[index];

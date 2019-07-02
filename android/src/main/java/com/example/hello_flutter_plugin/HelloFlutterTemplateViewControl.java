@@ -2,6 +2,7 @@ package com.example.hello_flutter_plugin;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class HelloFlutterTemplateViewControl implements PlatformView {
     }
 
     private void changeColor() {
+        Log.i("Android","changeColor");
         List list = new ArrayList<>();
         list.add(new Integer(Color.rgb(0,250,154)));
         list.add(new Integer(Color.rgb(255,165,0)));
