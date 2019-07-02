@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 
+import 'method_key.dart';
+
 class TemplateViewController {
   TemplateViewController._(int id)
       : _channel = MethodChannel('template_view_$id');
@@ -9,7 +11,7 @@ class TemplateViewController {
   final MethodChannel _channel;
 
   void changeColor() {
-
+    _channel.invokeMethod(MethodKey.ChangeColor);
   }
 }
 
@@ -50,7 +52,7 @@ class _TemplcateViewPageState extends State<TemplateViewPage> {
         creationParamsCodec: new StandardMessageCodec(),
       );
     }
-    return null;
+    return Text('TemplateViewPage 插件尚不支持$defaultTargetPlatform ');
   }
 
   void _onPlatformViewCreated(int id){

@@ -12,6 +12,7 @@
 static NSString *HelloMethodKeyInit = @"Init";
 static NSString *HelloMethodKeyGetCurrentUserPhone = @"GetCurrentUserPhone";
 static NSString *HelloMethodKeyFetchUserInfo = @"FetchUserInfo";
+static NSString *HelloMethodKeyChangeColor = @"ChangeColor";
 
 
 //callback key 由 native 触发，flutter 响应

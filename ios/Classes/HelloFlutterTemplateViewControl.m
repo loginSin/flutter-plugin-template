@@ -6,6 +6,7 @@
 //
 
 #import "HelloFlutterTemplateViewControl.h"
+#import "HelloMethodKey.h"
 
 @implementation HelloFlutterTemplateViewControl{
     int64_t _viewId;
@@ -40,15 +41,15 @@
 }
 
 -(void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result{
-    //    if ([[call method] isEqualToString:@"start"]) {
-    //        [_indicator startAnimating];
-    //    }else
-    //        if ([[call method] isEqualToString:@"stop"]){
-    //            [_indicator stopAnimating];
-    //        }
-    //        else {
-    //            result(FlutterMethodNotImplemented);
-    //        }
+    if([HelloMethodKeyChangeColor isEqualToString:call.method]) {
+        [self changeViewColor];
+    }
+}
+
+- (void)changeViewColor{
+    NSArray *colors = @[[UIColor redColor],[UIColor greenColor],[UIColor yellowColor],[UIColor brownColor]];
+    int index = arc4random()%colors.count;
+    _templcateView.backgroundColor = colors[index];
 }
 
 @end

@@ -28,6 +28,12 @@ class _NativeViewPageState extends State<NativeViewPage> {
     controller = _controller;
   }
 
+  onChangeColor() {
+    if(controller != null) {
+      controller.changeColor();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +45,13 @@ class _NativeViewPageState extends State<NativeViewPage> {
         child: Stack(
           children: <Widget>[
             new TemplateViewPage(this.userId, _onTemplateViewPageCreated,),
+            MaterialButton(
+              child: new Text("改变颜色"),
+              color: Colors.white,
+              onPressed: () {
+                onChangeColor();
+              }
+            )
           ],
         ),
       ),
