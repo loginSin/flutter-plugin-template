@@ -36,6 +36,8 @@ pubspec.lock
 **/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
+.setting/
+android/
 
 # iOS/XCode related
 **/ios/**/*.mode1v3

@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:hello_flutter_plugin/hello_flutter_plugin.dart';
+import 'package:hello_flutter_plugin/method_key.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,7 +13,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
 
   @override
   void initState() {
@@ -22,13 +22,11 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await HelloFlutterPlugin.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
+    
+    String appKey = "flutter_appKey";
+    HelloFlutterPlugin.init(appKey);
+
+    HelloFlutterPlugin.setNativeMethodCallHandler(_handler);
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -36,8 +34,25 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+
     });
+  }
+
+  Future<dynamic> _handler(MethodCall methodCall) {
+    if (MethodCallBackKey.FetchUserInfo == methodCall.method) {
+      Map map = methodCall.arguments;
+      print("fetch user info from native result " + map.toString());
+    }
+  }
+
+  onGetCurrentUserPhone() async {
+    Map map = await HelloFlutterPlugin.getCurrentUserPhone("flutter_currentUserId");
+    print("get current user phone from native " + map.toString());
+  }
+
+  onFetchUserInfo() {
+    HelloFlutterPlugin.fetchUserInfo("flutter_userId");
+    print("fetch user info from native start ");
   }
 
   @override
@@ -48,7 +63,47 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+          child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              height: 500,
+              child: Column(
+                children: <Widget>[
+                  Row(children: <Widget>[]),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onGetCurrentUserPhone(),
+                              child: Text("onGetCurrentUserPhone"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: RaisedButton(
+                              onPressed: () => onFetchUserInfo(),
+                              child: Text("onFetchUserInfo"),
+                              color: Colors.blueAccent,
+                              textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                        
+                      )
+                    ),
+                ],
+              )
+              ),
         ),
       ),
     );

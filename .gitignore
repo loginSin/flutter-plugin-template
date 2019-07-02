@@ -1,0 +1,5 @@
+.packages
+pubspec.lock
+android/.classpath
+android/.project
+android/.settings/
