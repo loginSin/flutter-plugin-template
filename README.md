@@ -110,30 +110,121 @@ iOS 端对于 flutter 的操作放在了单例类 `HelloFlutterWrapper` 中
 
 返回结果给 flutter wrapper 总共有三种方式，`不返回数据`，`通过 FlutterResult 返回数据`，`通过 FlutterMethodChannel 返回数据`
 
+`不返回数据`
 
-详细可以参见 `HelloFlutterWrapper` 的实现
+```
+- (void)initWithAppkey:(id)arg {
+    //不用给 flutter 处理了结果
+    if([arg isKindOfClass:[NSString class]]) {
+        NSString *appkey = (NSString *)arg;
+        //可以按照业务需求处理 appkey
+        //此处仅打印了 appkey 的内容
+        NSLog(@"iOS init 接收的 appkey 为 %@",appkey);
+    }
+}
+```
+
+`通过 FlutterResult 返回数据`
+
+```
+- (void)getCurrentUserPhone:(id)arg result:(FlutterResult)result{
+    //通过 result 返回结果给 flutter
+    if([arg isKindOfClass:[NSString class]]) {
+        NSString *userId = (NSString *)arg;
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:userId forKey:@"userId"];
+        [dic setObject:@"18512345678" forKey:@"phone"];
+        NSLog(@"iOS getCurrentUserPhone 通过 result 返回结果给 flutter 内容为 %@",dic);
+        result(dic);
+    }
+}
+```
+
+`通过 FlutterMethodChannel 返回数据`
+
+```
+- (void)fetchUserInfo:(id)arg {
+    //通过 methodchannel 返回结果给 flutter
+    if([arg isKindOfClass:[NSString class]]) {
+        NSString *userId = (NSString *)arg;
+        NSMutableDictionary *dic = [NSMutableDictionary new];
+        [dic setObject:userId forKey:@"userId"];
+        [dic setObject:@"iosUserName" forKey:@"name"];
+        NSLog(@"iOS fetchUserInfo 通过 methodchannel 返回结果给 flutter 内容为 %@",dic);
+        [self.channel invokeMethod:HelloMethodCallBackKeyFetchUserInfo arguments:dic];
+    }
+}
+```
+
+
+详细可以参见 `HelloFlutterWrapper.m` 的实现
 
 ## Android wrapper
 
 
 在 Android 设备上运行过后，会发现项目由 gradle 管理，并且自动生成了一个 `GeneratedPluginRegistrant` 类，在其源码中就可以看到 Android 端的 `HelloFlutterPlugin` 类
 
-在 `HelloFlutterPlugin.m` 中就可以看到 iOS 生成 MethodChannel
+在 `HelloFlutterPlugin.java` 中就可以看到 Android 生成 MethodChannel
 
 ```
-FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"hello_flutter_plugin"
-            binaryMessenger:[registrar messenger]];
+final MethodChannel channel = new MethodChannel(registrar.messenger(), "hello_flutter_plugin");
 ```
 
-Android 端对于 flutter 的操作放在了单例类 `HelloFlutterWrapper` 中
+Android 端对于 flutter 的操作放在了单例类 `HelloFlutterWrapper.java` 中
 
 返回结果给 flutter wrapper 总共有三种方式，`不返回数据`，`通过 FlutterResult 返回数据`，`通过 FlutterMethodChannel 返回数据`
 
+`不返回数据`
 
-详细可以参见 `HelloFlutterWrapper` 的实现
+```
+private void initWithAppkey(Object arg) {
+        //不用给 flutter 处理了结果
+        if(arg instanceof String) {
+            String appkey = String.valueOf(arg);
+            //可以按照业务需求处理 appkey
+            //此处仅打印了 appkey 的内容
+            Log.i("Android","init 接收的 appkey 为 "+appkey);
+        }
+    }
+```
+
+`通过 FlutterResult 返回数据`
+
+```
+private void getCurrentUserPhone(Object arg,MethodChannel.Result result) {
+        //通过 result 返回结果给 flutter
+        if(arg instanceof String) {
+            String userId = String.valueOf(arg);
+            Map map = new HashMap();
+            map.put("userId",userId);
+            map.put("phone","18512345678");
+            Log.i("Android","getCurrentUserPhone 通过 result 返回结果给 flutter 内容为"+map.toString());
+            result.success(map);
+        }
+    }
+```
+
+`通过 FlutterMethodChannel 返回数据`
+
+```
+private void fetchUserInfo(Object arg) {
+        //通过 methodchannel 返回结果给 flutter
+        if(arg instanceof String) {
+            String userId = String.valueOf(arg);
+            Map map = new HashMap();
+            map.put("userId",userId);
+            map.put("name","AndroidUserName");
+            Log.i("Android","fetchUserInfo 通过 methodchannel 返回结果给 flutter 内容为 "+map.toString());
+            methodChannel.invokeMethod(HelloMethodKey.FetchUserInfoCallBack,map);
+        }
+    }
+```
+
+
+
+详细可以参见 `HelloFlutterWrapper.java` 的实现
 
 
 # 源码地址
 
-[参见](https://github.com/loginSin/flutter-plugin-template)
+[github](https://github.com/loginSin/flutter-plugin-template)
