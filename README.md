@@ -2,7 +2,7 @@
 
 Flutter 是谷歌的移动 UI 框架，可以快速在 iOS 和 Android 上构建高质量的原生用户界面。
 
-[详细可以参见](https://flutter.dev/)
+详细可以参见 [flutter 官网](https://flutter.dev/)
 
 `今天的目的主要讲怎么创建一个封装 iOS/android 接口的flutter plugin`
 
@@ -50,15 +50,17 @@ Flutter 是谷歌的移动 UI 框架，可以快速在 iOS 和 Android 上构建
 
 iOS：Xcode
 
-Android：Android studio
+Android：Android Studio
 
-flutter：VS Code
+flutter：Visual Studio Code
 
 ## 原理
 
 flutter 通过 `MethodChannel` 实现与 native 的交互，可以详细[参见官网介绍](https://flutter.dev/docs/development/platform-integration/platform-channels)
 
-`调用任何接口，flutter 都会把 methodname 和 arguments 传递出去，native 需要根据 methodname 确认 flutter 的操作，然后根据具体的 arguments 处理，反之 native 调用 flutter 也是如此`
+![](https://flutter.dev/images/PlatformChannels.png)
+
+调用任何接口，flutter 都会把 methodname 和 arguments 传递出去，native 需要根据 methodname 确认 flutter 的操作，然后根据具体的 arguments 处理，反之 native 调用 flutter 也是如此
 
 `想要了解如何调用的，可以自行在 native 平台 debug`
 
@@ -76,10 +78,40 @@ static const MethodChannel _channel =
 
 所有接口全部通过该 methodchannel 进行与 native 的交互
 
+`不接收 native 的结果`
+
+```
+static void init(String appkey) {
+    _channel.invokeMethod(MethodKey.Init,appkey);
+}
+```
+
+`接收 native 通过 FlutterResult 返回数据`
+
+```
+static Future<Map> getCurrentUserPhone(String curUserid) async {
+    Map map = await _channel.invokeMethod(MethodKey.GetCurrentUserPhone,curUserid);
+    return map;
+}
+```
+
+`接收 native 通过 FlutterMethodChannel 返回数据`
+
+```
+static void fetchUserInfo(String userid) {
+      _channel.invokeMethod(MethodKey.FetchUserInfo,userid);
+}
+
+//需要 flutter APP 层设置 hanler 来处理
+static void setNativeMethodCallHandler(Future<dynamic> handler(MethodCall call)) {
+    _channel.setMethodCallHandler(handler);
+}
+```
+
 ### 运行 flutter 到指定设备
 
 
-1.保证有一个 iOS 连接电脑，如`iOS 模拟器 或者 iPhone 手机`
+1.保证至少有一个设备连接电脑，如`iOS 模拟器 或者 Android 手机`
 
 2.终端进入 `example` 目录，执行 `flutter devices`，查看可用的设备列表，可能会出现下面的内容，其中第二列为设备 id
 
@@ -96,9 +128,9 @@ iPhone Xʀ • BAAD4ECC-F718-4EFF-B9FB-64E1E9A35A3F • ios         • com.appl
 
 ## iOS wrapper
 
-在 iOS 设备上运行过后，会发现项目由 pod 管理，并且自动生成了一个 `GeneratedPluginRegistrant` 类，在其 .m 中就可以看到 iOS 端的 `HelloFlutterPlugin` 类
+在 iOS 设备上运行过后，会发现项目由 pod 管理，并且自动生成了一个 `GeneratedPluginRegistrant` 类，在其 .m 中就可以看到 flutter plugin 在 iOS 端的核心类 `HelloFlutterPlugin.m`
 
-在 `HelloFlutterPlugin.m` 中就可以看到 iOS 生成 MethodChannel
+在 `HelloFlutterPlugin.m` 中可以看到 iOS 生成的 MethodChannel
 
 ```
 FlutterMethodChannel* channel = [FlutterMethodChannel
@@ -106,9 +138,9 @@ FlutterMethodChannel* channel = [FlutterMethodChannel
             binaryMessenger:[registrar messenger]];
 ```
 
-iOS 端对于 flutter 的操作放在了单例类 `HelloFlutterWrapper` 中
+iOS 端对于 flutter 的操作放在了单例类 `HelloFlutterWrapper.m` 中
 
-返回结果给 flutter wrapper 总共有三种方式，`不返回数据`，`通过 FlutterResult 返回数据`，`通过 FlutterMethodChannel 返回数据`
+返回结果给 flutter wrapper 总共有三种方式，`不返回数据`，`通过 FlutterResult 返回数据`，`通过 FlutterMethodChannel 返回数据`，分别对应了上面 flutter wrapper 的三种方式
 
 `不返回数据`
 
@@ -162,7 +194,7 @@ iOS 端对于 flutter 的操作放在了单例类 `HelloFlutterWrapper` 中
 ## Android wrapper
 
 
-在 Android 设备上运行过后，会发现项目由 gradle 管理，并且自动生成了一个 `GeneratedPluginRegistrant` 类，在其源码中就可以看到 Android 端的 `HelloFlutterPlugin` 类
+在 Android 设备上运行过后，会发现项目由 gradle 管理，并且自动生成了一个 `GeneratedPluginRegistrant` 类，在其源码中就可以看到 flutter plugin 在 Android 端的核心类 `HelloFlutterPlugin` 
 
 在 `HelloFlutterPlugin.java` 中就可以看到 Android 生成 MethodChannel
 
@@ -172,7 +204,7 @@ final MethodChannel channel = new MethodChannel(registrar.messenger(), "hello_fl
 
 Android 端对于 flutter 的操作放在了单例类 `HelloFlutterWrapper.java` 中
 
-返回结果给 flutter wrapper 总共有三种方式，`不返回数据`，`通过 FlutterResult 返回数据`，`通过 FlutterMethodChannel 返回数据`
+返回结果给 flutter wrapper 总共有三种方式，`不返回数据`，`通过 FlutterResult 返回数据`，`通过 FlutterMethodChannel 返回数据`，分别对应了上面 flutter wrapper 的三种方式
 
 `不返回数据`
 
