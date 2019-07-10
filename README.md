@@ -4,7 +4,21 @@ Flutter 是谷歌的移动 UI 框架，可以快速在 iOS 和 Android 上构建
 
 详细可以参见 [flutter 官网](https://flutter.dev/)
 
-`今天的目的主要讲怎么创建一个封装 iOS/android 接口的flutter plugin`
+本文不会讲解 flutter 的语法，会着重讲解如何封装一个 iOS/Android 的 flutter plugin
+
+# 基本原理
+
+下图是 [官网文档](https://flutter.dev/docs/development/platform-integration/platform-channels) 描述的 flutter 与 iOS/Android MethodChannel 的调用关系图
+
+大致可以理解为 flutter 通过 MethodChannel 向 iOS/Android 传递方法名和参数，反之 iOS/Android 也可以通过 MethodChannel 向 flutter 传递方法名和参数
+
+![](https://flutter.dev/images/PlatformChannels.png)
+
+
+
+下图官网文档描述的 flutter 与 iOS/Android 传递的数据类型对比，可以看到 flutter 与 iOS/Android 只能传递基本的数据类型，较为高级的数据类型只能是 `String`,`List`,`Map`
+
+![](./images/flutter_native_values.png)
 
 # 创建 plugin
 
@@ -14,9 +28,9 @@ Flutter 是谷歌的移动 UI 框架，可以快速在 iOS 和 Android 上构建
 
 `flutter plugin` 可简单理解为下图中的 `flutter wrapper`,`iOS wrapper`,`Android wrapper` 三个部分组成，图中的`双向箭头表明了代码的调用逻辑`
 
+大家可能会有疑问：怎么确定 flutter wrapper 调用的是 iOS 还是 Android 的接口？答案是由运行的设备决定，即运行 iOS 设备，flutter wrapper 自动调用 iOS wrapper 的接口，Android 亦然
 
 ![](./images/flutter_plugin_arch.png)
-
 
 ## 目录结构
 
@@ -42,7 +56,7 @@ Flutter 是谷歌的移动 UI 框架，可以快速在 iOS 和 Android 上构建
 
 ## 获取 flutter 依赖
 
-第一次跑需要使用`终端`进入 plugin 项目路径下执行下面命令获取 flutter 的依赖
+第一次运行需要使用`终端`进入 plugin 项目路径下执行下面命令获取 flutter 的依赖
 
 `$ flutter packages get`
 
@@ -56,27 +70,31 @@ flutter：Visual Studio Code
 
 ## 原理
 
-flutter 通过 `MethodChannel` 实现与 native 的交互，可以详细[参见官网介绍](https://flutter.dev/docs/development/platform-integration/platform-channels)
-
-![](https://flutter.dev/images/PlatformChannels.png)
-
 调用任何接口，flutter 都会把 methodname 和 arguments 传递出去，native 需要根据 methodname 确认 flutter 的操作，然后根据具体的 arguments 处理，反之 native 调用 flutter 也是如此
 
-`想要了解如何调用的，可以自行在 native 平台 debug`
+`想要了解如何调用的，可以获取文末源码，自行在 native 平台 debug`
 
 
 ## flutter wrapper
 
 flutter wrapper 目前所有的接口封装在 `lib/hello_flutter_plugin.dart` 中，可以按需增加新的接口
 
-flutter 通过一个特定的 string 获取一个 methodchannel
+flutter 通过一个特定的 string 创建一个 methodchannel
 
 ```
 static const MethodChannel _channel =
       const MethodChannel('hello_flutter_plugin');
 ```
 
-所有接口全部通过该 methodchannel 进行与 native 的交互
+所有接口全部通过该 methodchannel 进行与 native 的交互，大致有三种调用方式
+
+`不接收 native 的结果`：通知 native 完成指定的任务，不需要 native 返回结果
+
+`接收 native 通过 FlutterResult 返回数据`：通知 native 完成指定的任务，需要 native 较快的返回结果，比如让 native 通过 userid 把完整的用户信息传递回 flutter；用于短时间任务的结果回调
+
+`接收 native 通过 FlutterMethodChannel 返回数据`：通知 native 完成指定的任务，但是 native 什么时候完成不能确定，比如说让 native 下载一个文件，flutter 可以注册响应时间的 handler ，然后通知 native 之后开始下载，flutter 就可以做其他的任务，当 native 处理完之后，通过 MethodChannel 再告知 flutter 结果；用于长时或者不确定完成时间的结果回调
+
+下面是简单的示例代码，详细的可参见文末的源码
 
 `不接收 native 的结果`
 
